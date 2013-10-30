@@ -44,7 +44,7 @@ public class ShellApp {
 		String[] tokens;
 		
 		while(true) {
-			System.out.print("EchoClient>");
+			System.out.print("EchoClient> ");
 			tokens = scanner.nextLine().trim().split("[ ]+");
 			tokens[0] = tokens[0].toLowerCase();
 			
@@ -95,7 +95,7 @@ public class ShellApp {
 			try {
 				//client.connect("131.159.52.1", 50000);
 				client.connect(tokens[1], Integer.parseInt(tokens[2]));
-				System.out.print(unmarshall(client.receive()));
+				System.out.println("EchoClient> " + unmarshall(client.receive()));
 			} catch (UnknownHostException e) {
 				logger.error(e.toString());
 			} catch (IOException e) {
@@ -126,9 +126,13 @@ public class ShellApp {
 			/* print help message for send */
 			System.out.println(insufficientArgs + help("send"));
 		} else {
+			String msg="";
+			for(int i=1;i<tokens.length;i++){
+				msg+=tokens[i]+" ";
+			}
 			try {
-				if(client.send(marshall(tokens[1]))) {
-					System.out.print("Server reply: " + unmarshall(client.receive()));
+				if(client.send(marshall(msg))) {
+					System.out.println("EchoClient> " + unmarshall(client.receive()));
 				} else {
 					logger.error("You are not connected to the echo server");
 				}
@@ -196,6 +200,6 @@ public class ShellApp {
 				break;
 			}
 		}
-		return s;
+		return s.replace("\n", "").replace("\r", "");
 	}
 }
