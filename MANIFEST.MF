@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.9.2
+Created-By: 1.6.0_25-b06 (Sun Microsystems Inc.)
+built-by: Shady Yacoub
+Main-Class: ui.Application
+Class-Path: libs/log4j-1.2.17.jar
+
