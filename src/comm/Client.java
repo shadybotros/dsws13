@@ -11,28 +11,29 @@ public class Client implements ClientDelegate {
 	private InputStream in;
 	private OutputStream out;
 	private byte[] receiveBytes;
-	private boolean connected = false;
 	
 	public void connect(String host, int port)
 		throws UnknownHostException, IOException {
-		if (connected) disconnect();
+		disconnect();
 		socket = new Socket(host, port);
 		in = socket.getInputStream();
 		out = socket.getOutputStream();
 		receiveBytes = new byte[131072];		/*  max msg size is 128 Kbyte */
-		connected = true;
 	}
 	
 	public void disconnect() throws IOException {
-		if (!connected) return;
-		connected = false;
-		out.close();
-		in.close();
-		socket.close();
+		if(out != null)
+			out.close();
+		if(in != null)
+			in.close();
+		if(socket != null)
+			socket.close();
 	}
 	
 	public boolean send(byte[] sendBytes) throws IOException {
-		if (!connected) return false;
+		if(out == null) {
+			return false;
+		}
 		out.write(sendBytes);
 		out.write('\r');
 		out.flush();
@@ -40,12 +41,10 @@ public class Client implements ClientDelegate {
 	}
 	
 	public byte[] receive() throws IOException {
-		if (!connected) return null;
+		if(in == null) {
+			return null;
+		}
 		in.read(receiveBytes);
 		return receiveBytes;
-	}
-
-	public boolean isConnected() {
-		return connected;
 	}
 }

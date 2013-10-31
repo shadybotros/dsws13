@@ -8,5 +8,4 @@ public interface ClientDelegate {
 	public void disconnect() throws IOException;
 	public boolean send(byte[] sendBytes) throws IOException;
 	public byte[] receive() throws IOException;
-	public boolean isConnected();
 }

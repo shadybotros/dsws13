@@ -102,7 +102,7 @@ public class ShellApp {
 			} catch (UnknownHostException e) {
 				logger.error("IP address of the host could not be determined");
 			} catch (IOException e) {
-				logger.error("Connection timed out; please review the IP address and/or port number provided");
+				logger.error("Failed to connect; please make sure you have internet connection and review the IP address and/or port number");
 			} catch (NumberFormatException e) {
 				logger.error("The second argument should be the port number");
 			}
@@ -110,23 +110,17 @@ public class ShellApp {
 	}
 	
 	private void disconnect() {
-		if(!client.isConnected()) {
-			System.out.println("You are already disconnected from the echo server");
-		} else {
-			try {
-				client.disconnect();
-				System.out.println("Successfully disconnected from the echo server");
-				logger.info("Disconnected");
-			} catch (IOException e) {
-				logger.error("Failed to disconnect; please try again");
-			}
+		try {
+			client.disconnect();
+			System.out.println("Disconnected from the echo server");
+			logger.info("Disconnected");
+		} catch (IOException e) {
+			logger.error("Failed to disconnect; you may be already disconnected");
 		}
 	}
 	
 	private void send(String[] tokens) {
-		if(!client.isConnected()) {
-			System.out.println("You are not connected to an echo server");
-		} else if (tokens.length < 2) {
+		if (tokens.length < 2) {
 			/* print help message for send */
 			System.out.println(insufficientArgs + help("send"));
 		} else {
@@ -138,13 +132,17 @@ public class ShellApp {
 				if(client.send(marshall(msg))) {
 					logger.info("Message sent: '" + msg + "'");
 					reply = unmarshall(client.receive());
-					logger.info("Reply received: '" + reply + "'");
-					System.out.println("EchoClient> " + reply);
+					if(reply.equals("")) {
+						logger.error("Did not get a reply; please  make sure you are connected to the server");
+					} else {
+						logger.info("Reply received: '" + reply + "'");
+						System.out.println("EchoClient> " + reply);
+					}
 				} else {
-					logger.error("You are not connected to the echo server");
+					logger.error("Failed to send; please  make sure you are connected to the server");
 				}
 			} catch (IOException e) {
-				logger.error("Failed to send; please try again");
+				logger.error("Failed to send; please make sure you are connected to the server");
 			}
 		}
 	}
@@ -170,35 +168,38 @@ public class ShellApp {
 	private String help(String command) {
 		String msg = "";
 		if (command == "all") {
-			msg += "\nIntended Usage:\n";
+			msg += "\nIntended Usage:\n---------------";
 		} if (command == "all" || command == "connect") {
-			msg += "\n'connect <address> <port>' - "
+			msg += "\nconnect <address> <port>\t"
 				+ "Connects to the echo server\n"
-				+ "<address> (string) Hostname or IP address of echo server\n"
-				+ "<port> (integer) Port number of echo server\n";
+				+ "<address>\t\t\t(string) Hostname or IP address of echo server\n"
+				+ "<port>\t\t\t\t(integer) Port number of echo server\n---------------";
 		} if (command == "all" || command == "disconnect") {
-			msg += "\n'disconnect' - "
-				+ "Disconnects from echo server\n";
+			msg += "\ndisconnect\t\t\t"
+				+ "Disconnects from echo server\n---------------";
 		} if (command == "all" || command == "send") {
-			msg += "\n'send <message>' - "
+			msg += "\nsend <message>\t\t\t"
 				+ "Sends a text message to echo server\n"
-				+ "<message> (string) A sequence of ASCII characters - max 128 Kbyte\n";
+				+ "<message>\t\t\t(string) A sequence of ASCII characters - max 128 Kbyte\n---------------";
 		} if (command == "all" || command == "logLevel") {
-			msg += "\n'logLevel <level>' - "
+			msg += "\nlogLevel <level>\t\t"
 				+ "Sets the logger to the specified log level\n"
-				+ "<level> (string) can be ALL, DEBUG, INFO, WARN, ERROR, FATAL or OFF\n";
+				+ "<level>\t\t\t\t(string) Log level: can be ALL, DEBUG, INFO, WARN, ERROR, FATAL or OFF\n---------------";
 		} if (command == "all" || command == "quit") {
-			msg += "\n'quit' - "
-				+ "Disconnects from echo server and exits the application\n";
+			msg += "\nquit\t\t\t\t"
+				+ "Disconnects from echo server and exits the application\n---------------";
 		}
 		return msg;
 	}
 	
 	private byte[] marshall(String s) {
-		return s.getBytes();
+		return (s == null) ? null : s.getBytes();
 	}
 	
 	private String unmarshall(byte[] bytes) {
+		if(bytes == null) {
+			return "";
+		}
 		String s = "";
 		char c;
 		for (int i = 0; i < bytes.length; ++i) {
