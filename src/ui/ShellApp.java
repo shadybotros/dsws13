@@ -17,6 +17,7 @@ public class ShellApp {
 	public void start() {
 		initializeLogging();
 		client = new Client();
+		logger.info("App started. Logging initialized. ClientDelegate object created. Entering parse loop...");
 		parse();
 	}
 	
@@ -35,7 +36,7 @@ public class ShellApp {
 			FileAppender fA = new FileAppender(pL, logDir, true);
 			logger.addAppender(fA);
 		} catch (IOException e) {
-			logger.error(e.toString() + " while creating log file");
+			logger.error("Cannot access log file");
 		}
 	}
 	
@@ -77,6 +78,7 @@ public class ShellApp {
 			else if(tokens[0].equals("quit")) {
 				disconnect();
 				System.out.println("Program will exit now");
+				logger.info("Closing app...");
 				break;
 			}
 			
@@ -96,12 +98,13 @@ public class ShellApp {
 				//client.connect("131.159.52.1", 50000);
 				client.connect(tokens[1], Integer.parseInt(tokens[2]));
 				System.out.println("EchoClient> " + unmarshall(client.receive()));
+				logger.info("Connected to " + tokens[1] + ":" + Integer.parseInt(tokens[2]));
 			} catch (UnknownHostException e) {
-				logger.error(e.toString());
+				logger.error("IP address of the host could not be determined");
 			} catch (IOException e) {
-				logger.error(e.toString());
+				logger.error("Connection timed out; please review the IP address and/or port number provided");
 			} catch (NumberFormatException e) {
-				logger.error(e.toString());
+				logger.error("The second argument should be the port number");
 			}
 		}
 	}
@@ -113,31 +116,35 @@ public class ShellApp {
 			try {
 				client.disconnect();
 				System.out.println("Successfully disconnected from the echo server");
+				logger.info("Disconnected");
 			} catch (IOException e) {
-				logger.error(e.toString());
+				logger.error("Failed to disconnect; please try again");
 			}
 		}
 	}
 	
 	private void send(String[] tokens) {
 		if(!client.isConnected()) {
-			System.out.println("You are not connected to the echo server");
+			System.out.println("You are not connected to an echo server");
 		} else if (tokens.length < 2) {
 			/* print help message for send */
 			System.out.println(insufficientArgs + help("send"));
 		} else {
-			String msg="";
+			String msg="", reply;
 			for(int i=1;i<tokens.length;i++){
 				msg+=tokens[i]+" ";
 			}
 			try {
 				if(client.send(marshall(msg))) {
-					System.out.println("EchoClient> " + unmarshall(client.receive()));
+					logger.info("Message sent: '" + msg + "'");
+					reply = unmarshall(client.receive());
+					logger.info("Reply received: '" + reply + "'");
+					System.out.println("EchoClient> " + reply);
 				} else {
 					logger.error("You are not connected to the echo server");
 				}
 			} catch (IOException e) {
-				logger.error(e.toString());
+				logger.error("Failed to send; please try again");
 			}
 		}
 	}
@@ -154,6 +161,7 @@ public class ShellApp {
 						+ help("logLevel"));
 			} else {
 				logger.setLevel(level);
+				logger.info("Log level set to " + logger.getLevel().toString());
 				System.out.println("Log level set to " + logger.getLevel().toString());
 			}
 		}
@@ -164,23 +172,23 @@ public class ShellApp {
 		if (command == "all") {
 			msg += "\nIntended Usage:\n";
 		} if (command == "all" || command == "connect") {
-			msg += "\nconnect <address> <port>\n"
+			msg += "\n'connect <address> <port>' - "
 				+ "Connects to the echo server\n"
 				+ "<address> (string) Hostname or IP address of echo server\n"
 				+ "<port> (integer) Port number of echo server\n";
 		} if (command == "all" || command == "disconnect") {
-			msg += "\ndisconnect\n"
-				+ "Disconnects from echo server";
+			msg += "\n'disconnect' - "
+				+ "Disconnects from echo server\n";
 		} if (command == "all" || command == "send") {
-			msg += "\nsend <message>\n"
+			msg += "\n'send <message>' - "
 				+ "Sends a text message to echo server\n"
 				+ "<message> (string) A sequence of ASCII characters - max 128 Kbyte\n";
 		} if (command == "all" || command == "logLevel") {
-			msg += "\nlogLevel <level>\n"
+			msg += "\n'logLevel <level>' - "
 				+ "Sets the logger to the specified log level\n"
 				+ "<level> (string) can be ALL, DEBUG, INFO, WARN, ERROR, FATAL or OFF\n";
 		} if (command == "all" || command == "quit") {
-			msg += "\nquit\n"
+			msg += "\n'quit' - "
 				+ "Disconnects from echo server and exits the application\n";
 		}
 		return msg;
