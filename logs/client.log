@@ -135,3 +135,19 @@
 2013-11-01 00:09:36,513 INFO  [main] ui.ShellApp: Reply received: 'hello world '
 2013-11-01 00:10:21,443 INFO  [main] ui.ShellApp: Disconnected
 2013-11-01 00:10:21,443 INFO  [main] ui.ShellApp: Closing app...
+2013-11-01 01:08:09,152 INFO  [main] ui.ShellApp: App started. Logging initialized. ClientDelegate object created. Entering parse loop...
+2013-11-01 01:08:18,912 ERROR [main] ui.ShellApp: Failed to connect; please make sure you have internet connection and review the IP address and/or port number
+2013-11-01 01:08:35,505 INFO  [main] ui.ShellApp: App started. Logging initialized. ClientDelegate object created. Entering parse loop...
+2013-11-01 01:08:43,099 INFO  [main] ui.ShellApp: Connected to 131.159.52.1:50000
+2013-11-01 01:08:47,477 INFO  [main] ui.ShellApp: Message sent: 'hello world '
+2013-11-01 01:08:47,482 INFO  [main] ui.ShellApp: Reply received: 'hello world '
+2013-11-01 01:08:54,191 INFO  [main] ui.ShellApp: Disconnected
+2013-11-01 01:09:00,587 INFO  [main] ui.ShellApp: Disconnected
+2013-11-01 01:09:09,249 ERROR [main] ui.ShellApp: Failed to send; please make sure you are connected to the server
+2013-11-01 01:09:21,059 INFO  [main] ui.ShellApp: Connected to 131.159.52.1:50000
+2013-11-01 01:09:26,148 INFO  [main] ui.ShellApp: Message sent: 'hello world '
+2013-11-01 01:09:26,154 INFO  [main] ui.ShellApp: Reply received: 'hello world '
+2013-11-01 01:09:39,672 INFO  [main] ui.ShellApp: Message sent: 'hello world '
+2013-11-01 01:09:58,572 ERROR [main] ui.ShellApp: Failed to send; please make sure you are connected to the server
+2013-11-01 01:10:02,533 INFO  [main] ui.ShellApp: Disconnected
+2013-11-01 01:10:02,533 INFO  [main] ui.ShellApp: Closing app...

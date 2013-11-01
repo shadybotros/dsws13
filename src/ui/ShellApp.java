@@ -13,6 +13,8 @@ public class ShellApp {
 	private Logger logger;
 	private ClientDelegate client;
 	private String insufficientArgs = "Insufficient arguments\n\nUsage:";
+	private String host;
+	private String port;
 	
 	public void start() {
 		initializeLogging();
@@ -57,6 +59,7 @@ public class ShellApp {
 			/* disconnect */
 			else if(tokens[0].equals("disconnect")) {
 				disconnect();
+				System.out.println("EchoClient> Connection terminated: " + host + " / " + port);
 			}
 			
 			/* send <message> */
@@ -77,14 +80,14 @@ public class ShellApp {
 			/* quit */
 			else if(tokens[0].equals("quit")) {
 				disconnect();
-				System.out.println("Program will exit now");
+				System.out.println("EchoClient> Program will exit now");
 				logger.info("Closing app...");
 				break;
 			}
 			
 			/* <anything else> */
 			else {
-				System.out.println("Unknown command\n" + help("all"));
+				System.out.println("EchoClient> Unknown command\n" + help("all"));
 			}
 		}
 	}
@@ -92,13 +95,15 @@ public class ShellApp {
 	private void connect(String[] tokens) {
 		if(tokens.length < 3) {
 			/* print help message for connect */
-			System.out.println(insufficientArgs + help("connect"));
+			System.out.println("EchoClient> " + insufficientArgs + help("connect"));
 		} else {
 			try {
 				//client.connect("131.159.52.1", 50000);
 				client.connect(tokens[1], Integer.parseInt(tokens[2]));
 				System.out.println("EchoClient> " + unmarshall(client.receive()));
 				logger.info("Connected to " + tokens[1] + ":" + Integer.parseInt(tokens[2]));
+				host = tokens[1];
+				port = tokens[2];
 			} catch (UnknownHostException e) {
 				logger.error("IP address of the host could not be determined");
 			} catch (IOException e) {
@@ -112,7 +117,6 @@ public class ShellApp {
 	private void disconnect() {
 		try {
 			client.disconnect();
-			System.out.println("Disconnected from the echo server");
 			logger.info("Disconnected");
 		} catch (IOException e) {
 			logger.error("Failed to disconnect; you may be already disconnected");
@@ -122,7 +126,7 @@ public class ShellApp {
 	private void send(String[] tokens) {
 		if (tokens.length < 2) {
 			/* print help message for send */
-			System.out.println(insufficientArgs + help("send"));
+			System.out.println("Echo Client> " + insufficientArgs + help("send"));
 		} else {
 			String msg="", reply;
 			for(int i=1;i<tokens.length;i++){
@@ -150,17 +154,17 @@ public class ShellApp {
 	private void logLevel(String[] tokens) {
 		if (tokens.length < 2) {
 			/* print help message for logLevel */
-			System.out.println(insufficientArgs + help("logLevel"));
+			System.out.println("Echo Client> " + insufficientArgs + help("logLevel"));
 		} else {
 			Level level = Level.toLevel(tokens[1].toUpperCase());
 			if (level == Level.DEBUG && !tokens[1].toUpperCase().equals("DEBUG")) {
 				/* print help message for logLevel */
-				System.out.println("The provided argument is not a valid option\n"
+				System.out.println("Echo Client> The provided argument is not a valid option\n"
 						+ help("logLevel"));
 			} else {
 				logger.setLevel(level);
 				logger.info("Log level set to " + logger.getLevel().toString());
-				System.out.println("Log level set to " + logger.getLevel().toString());
+				System.out.println("Echo Client> Log level set to " + logger.getLevel().toString());
 			}
 		}
 	}
