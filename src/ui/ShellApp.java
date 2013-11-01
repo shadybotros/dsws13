@@ -83,11 +83,9 @@ public class ShellApp {
 			
 			/* disconnect */
 			else if(tokens[0].equals("disconnect")) {
-				if (client.isConnected())
+				if (host!=null)
 					System.out.println("EchoClient> Connection terminated: "+ host + " / " + port);
 				disconnect();
-				host="";
-				port="";
 			}
 			
 			/* send <message> */
@@ -156,10 +154,11 @@ public class ShellApp {
 	 * Possible error during connection clearing is logged to the logging file. 
 	 */
 	private void disconnect() {
-		if(client.isConnected()){
+		if(host!=null){
 		try {
 			client.disconnect();
 			logger.info("Disconnected");
+			host=null;
 		} catch (IOException e) {
 			logger.error("Failed to disconnect; you may be already disconnected");
 		}
