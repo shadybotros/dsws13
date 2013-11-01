@@ -14,12 +14,22 @@ import java.net.UnknownHostException;
  */
 public class Client implements ClientDelegate {
 	private Socket socket;
-	/* Stream receiving replies from echo server */
+	/**
+	 *  Stream receiving replies from echo server
+     */
 	private InputStream in;
-	/* Stream receiving user entries */
+	/**
+	 *  Stream receiving user entries 
+	 */
 	private OutputStream out;
-	/* Byte array received by echo server */
+	/**
+	 *  Byte array received by echo server 
+	 */
 	private byte[] receiveBytes;
+	/**
+	 *  Boolean whether client is connected to server 
+	 */
+	private boolean connected;
 	
 	/**
 	 * Method initializes stream socket to a server specified by user entry.
@@ -35,6 +45,8 @@ public class Client implements ClientDelegate {
 		in = socket.getInputStream();
 		out = socket.getOutputStream();
 		receiveBytes = new byte[131072];		/*  max msg size is 128 Kbyte */
+		connected=true;
+		
 	}
 	
 	/**
@@ -42,6 +54,7 @@ public class Client implements ClientDelegate {
 	 * @throws IOException Disconnection failure
 	 */
 	public void disconnect() throws IOException {
+		connected=false;
 		if(out != null)
 			out.close();
 		if(in != null)
@@ -77,5 +90,12 @@ public class Client implements ClientDelegate {
 		}
 		in.read(receiveBytes);
 		return receiveBytes;
+	}
+	/**
+	 * Methods returns whether client is connected
+	 * @return boolean
+	 */
+	public boolean isConnected(){
+		return connected;
 	}
 }

@@ -18,11 +18,17 @@ public class ShellApp {
 	
 	private Logger logger;
 	private ClientDelegate client;
-	/* Default string for insufficient arguments */
+	/**
+	 *  Default string for insufficient arguments
+	 */
 	private String insufficientArgs = "Insufficient arguments\n\nUsage:";
-	/* Hostname of echo server */
+	/**
+	 * Hostname of echo server
+	 */
 	private String host;
-	/* Port of echo server */
+	/**
+	 *  Port of echo server
+	 */
 	private String port;
 	
 	/**
@@ -77,8 +83,9 @@ public class ShellApp {
 			
 			/* disconnect */
 			else if(tokens[0].equals("disconnect")) {
+				if (client.isConnected())
+					System.out.println("EchoClient> Connection terminated: "+ host + " / " + port);
 				disconnect();
-				System.out.println("EchoClient> Connection terminated: " + host + " / " + port);
 				host="";
 				port="";
 			}
@@ -149,11 +156,16 @@ public class ShellApp {
 	 * Possible error during connection clearing is logged to the logging file. 
 	 */
 	private void disconnect() {
+		if(client.isConnected()){
 		try {
 			client.disconnect();
 			logger.info("Disconnected");
 		} catch (IOException e) {
 			logger.error("Failed to disconnect; you may be already disconnected");
+		}
+		}
+		else{
+			logger.error("You are not connected");
 		}
 	}
 	
