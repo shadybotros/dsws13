@@ -8,14 +8,26 @@ import comm.Client;
 import comm.ClientDelegate;
 import org.apache.log4j.*;
 
+/**
+ * Class to prcoess the user entries, doing initial setups and communicating with the echo server.
+ * 
+ * @author Shady Yacoub, Amin Chawki, Dominik Figlestahler
+ *
+ */
 public class ShellApp {
 	
 	private Logger logger;
 	private ClientDelegate client;
+	/* Default string for insufficient arguments */
 	private String insufficientArgs = "Insufficient arguments\n\nUsage:";
+	/* Hostname of echo server */
 	private String host;
+	/* Port of echo server */
 	private String port;
 	
+	/**
+	 * Method to initialize logging, initialize ClientDelegate and initialize parsing.
+	 */
 	public void start() {
 		initializeLogging();
 		client = new Client();
@@ -23,10 +35,13 @@ public class ShellApp {
 		parse();
 	}
 	
+	/**
+	 * Method sets default logging level to ALL and initializes the log file to log user entries.
+	 */
 	private void initializeLogging() {
 		logger = Logger.getLogger(ShellApp.class);
 		logger.setLevel(Level.ALL);
-		/* initialize console logging*/
+		/* initialize console logging */
 		SimpleLayout sL = new SimpleLayout();
 		ConsoleAppender cA = new ConsoleAppender(sL);
 		logger.addAppender(cA);
@@ -42,6 +57,10 @@ public class ShellApp {
 		}
 	}
 	
+	/**
+	 * Method reads user entries, tokenises them and calls suitable methods to handle the user request.
+	 * It calls the help function if the user entry is not supported.
+	 */
 	private void parse() {
 		Scanner scanner = new Scanner(System.in);
 		String[] tokens;
@@ -95,6 +114,12 @@ public class ShellApp {
 		scanner.close();
 	}
 	
+	/**
+	 * Method tries to connect the client to a server specified by user entry.
+	 * It calls the help function if the hostname or port of the server are not specified.
+	 * Possible errors during connection establishment are logged to the logging file.
+	 * @param tokens token[1] hostname of server, token[2] port of server.
+	 */
 	private void connect(String[] tokens) {
 		if(tokens.length!=3) {
 			/* print help message for connect */
@@ -119,6 +144,10 @@ public class ShellApp {
 		}
 	}
 	
+	/**
+	 * Methods tries to disconnect the client from the echo server.
+	 * Possible error during connection clearing is logged to the logging file. 
+	 */
 	private void disconnect() {
 		try {
 			client.disconnect();
@@ -128,6 +157,13 @@ public class ShellApp {
 		}
 	}
 	
+	/**
+	 * Method tries to send the user message to the echo server by marshalling it.
+	 * If a reply comes back it will be unmarshalled and displayed to the user.
+	 * It calls the help function if there is no user message to be send.
+	 * Possible errors during message sending are logged to the logging file.
+	 * @param tokens tokens[i>=1] user message to be send to the echo server.
+	 */
 	private void send(String[] tokens) {
 		if (tokens.length < 2) {
 			/* print help message for send */
@@ -156,6 +192,12 @@ public class ShellApp {
 		}
 	}
 	
+	/**
+	 * Method sets the logger to a logging level specified by user entry.
+	 * It proofs that the logging level is set correctly.
+	 * It calls the help function if the logging level is not supported.
+	 * @param tokens token[1] new logging level
+	 */
 	private void logLevel(String[] tokens) {
 		if (tokens.length != 2) {
 			/* print help message for logLevel */
@@ -174,6 +216,11 @@ public class ShellApp {
 		}
 	}
 	
+	/**
+	 * Method informs the user about how to use the application.
+	 * @param command String specified by calling method to return proper help message.
+	 * @return help message to be displayed to the user.
+	 */
 	private String help(String command) {
 		String msg = "";
 		if (command == "all") {
@@ -201,10 +248,20 @@ public class ShellApp {
 		return msg;
 	}
 	
+	/**
+	 * Methods to convert a user entry into a processible format for sending it to the echo server.
+	 * @param s User entry to be send to the echo server.
+	 * @return Byte array of given string.
+	 */
 	private byte[] marshall(String s) {
 		return (s == null) ? null : s.getBytes();
 	}
 	
+	/**
+	 * Method to convert a reply from the echo server into a processible format to displaying it to the user.
+	 * @param bytes Reply of echo server as byte array.
+	 * @return String to the given byte array.
+	 */
 	private String unmarshall(byte[] bytes) {
 		if(bytes == null) {
 			return "";
