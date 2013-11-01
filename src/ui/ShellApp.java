@@ -157,7 +157,7 @@ public class ShellApp {
 	}
 	
 	private void logLevel(String[] tokens) {
-		if (tokens.length < 2) {
+		if (tokens.length != 2) {
 			/* print help message for logLevel */
 			System.out.println("Echo Client> " + insufficientArgs + help("logLevel"));
 		} else {
