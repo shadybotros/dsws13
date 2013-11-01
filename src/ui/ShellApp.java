@@ -60,6 +60,8 @@ public class ShellApp {
 			else if(tokens[0].equals("disconnect")) {
 				disconnect();
 				System.out.println("EchoClient> Connection terminated: " + host + " / " + port);
+				host="";
+				port="";
 			}
 			
 			/* send <message> */
@@ -90,10 +92,11 @@ public class ShellApp {
 				System.out.println("EchoClient> Unknown command\n" + help("all"));
 			}
 		}
+		scanner.close();
 	}
 	
 	private void connect(String[] tokens) {
-		if(tokens.length < 3) {
+		if(tokens.length!=3) {
 			/* print help message for connect */
 			System.out.println("EchoClient> " + insufficientArgs + help("connect"));
 		} else {
@@ -110,6 +113,8 @@ public class ShellApp {
 				logger.error("Failed to connect; please make sure you have internet connection and review the IP address and/or port number");
 			} catch (NumberFormatException e) {
 				logger.error("The second argument should be the port number");
+			} catch(IllegalArgumentException e){
+				logger.error("Invalid Arguments");
 			}
 		}
 	}
